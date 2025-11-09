@@ -1,6 +1,6 @@
 const express = require('express')
 const cors =require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = 3000
 app.use(cors())
@@ -37,6 +37,22 @@ async function run() {
        res.send(result)
       })
 
+      // details page 
+      app.get('/movies/:id',async (req,res)=>{
+        const {id} = req.params
+        // console.log(id)
+        const objectId =new ObjectId(id)
+
+        const result = await modelcollection.findOne({_id: objectId})
+
+        res.send({
+          success:true,
+          result
+        })
+      })
+  
+
+      // Add a new movie privet rout 
       // post mathod 
       // add movie 
       app.post('/movies',async(req,res)=>{
