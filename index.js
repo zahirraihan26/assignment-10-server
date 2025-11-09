@@ -26,9 +26,29 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
+      
+    const db = client.db('assignment-10')
+    const modelcollection =db.collection('all-movie')
+  
+      //  find 
+      // All movies 
+      app.get('/movies',async(req,res)=>{
+        const result = await modelcollection.find().toArray()
+       res.send(result)
+      })
 
+      // post mathod 
+      // add movie 
+      app.post('/movies',async(req,res)=>{
+        const data =req.body
+        // console.log(data)
+        const result=await modelcollection.insertOne(data)
 
-
+        res.send({
+          success: true,
+          result
+        })
+      })
 
 
 
