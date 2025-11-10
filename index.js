@@ -109,6 +109,19 @@ async function run() {
     })
 
 
+    // Recently Added 6 data 
+    app.get('/latest-movie',async(req,res)=>{
+
+      const result =await modelcollection.find().sort({created_at: 'desc'}).limit(6).toArray()
+       console.log(result)
+
+      res.send(result)
+
+    })
+
+
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
