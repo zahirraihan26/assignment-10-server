@@ -1,5 +1,5 @@
 const express = require('express')
-const cors =require('cors')
+const cors = require('cors')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = 3000
@@ -26,49 +26,90 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-      
+
     const db = client.db('assignment-10')
-    const modelcollection =db.collection('all-movie')
-  
-      //  find 
-      // All movies 
-      app.get('/movies',async(req,res)=>{
-        const result = await modelcollection.find().toArray()
-       res.send(result)
+    const modelcollection = db.collection('all-movie')
+
+    //  find 
+    // All movies 
+    // normal page 
+    app.get('/movies', async (req, res) => {
+      const result = await modelcollection.find().toArray()
+      res.send(result)
+    })
+
+    // details page 
+    // normal page
+    app.get('/movies/:id', async (req, res) => {
+      const { id } = req.params
+      // console.log(id)
+      const objectId = new ObjectId(id)
+
+      const result = await modelcollection.findOne({ _id: objectId })
+
+      res.send({
+        success: true,
+        result
+      })
+    })
+
+
+    // Add a new movie privetrout 
+    // post mathod 
+    // add movie 
+    // privet page 
+    app.post('/movies', async (req, res) => {
+      const data = req.body
+      // console.log(data)
+      const result = await modelcollection.insertOne(data)
+
+      res.send({
+        success: true,
+        result
+      })
+    })
+
+    // put 
+    // update movie 
+    // privet 
+    app.put('/movies/:id', async (req, res) => {
+      const { id } = req.params
+      const data = req.body
+      // console.log(id)
+      // console.log(data)
+      const objectId = new ObjectId(id)
+      const filter = { _id: objectId }
+      const update ={
+        $set:data
+      }
+
+      const result = await modelcollection.updateOne(filter,update)
+
+      res.send({
+        success: true,
+        result
       })
 
-      // details page 
-      app.get('/movies/:id',async (req,res)=>{
-        const {id} = req.params
-        // console.log(id)
-        const objectId =new ObjectId(id)
+    })
 
-        const result = await modelcollection.findOne({_id: objectId})
+    // delete 
+    // delet data from api 
+    app.delete('/movies/:id',async(req,res)=>{
+        const { id } = req.params
+        const objectId = new ObjectId(id)
+      const filter = { _id: objectId }
 
-        res.send({
-          success:true,
-          result
-        })
-      })
-  
+      const result = await modelcollection.deleteOne(filter)
 
-      // Add a new movie privet rout 
-      // post mathod 
-      // add movie 
-      app.post('/movies',async(req,res)=>{
-        const data =req.body
-        // console.log(data)
-        const result=await modelcollection.insertOne(data)
-
-        res.send({
-          success: true,
-          result
-        })
+      res.send({
+        success:true,
+        result
       })
 
+    })
 
 
-    
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
